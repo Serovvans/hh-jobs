@@ -100,7 +100,7 @@ def save_vacancies(database_name, params):
                     VALUES (%s, %s, %s, %s, %s, %s)
                     """,
                     (emp, inf.get('position'), inf.get('min_salary'), inf.get('max_salary'),
-                     inf.get('requirements'), inf.get('vacancy_url'))
+                     inf.get('requirements'), inf.get('url'))
                 )
 
     conn.commit()
