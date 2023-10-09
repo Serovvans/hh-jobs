@@ -32,7 +32,7 @@ def create_database(database_name: str, params: dict):
     conn.autocommit = True
     cur = conn.cursor()
 
-    cur.execute(f"DROP DATABASE {database_name}")
+    cur.execute(f"DROP DATABASE IF EXISTS {database_name}")
     cur.execute(f"CREATE DATABASE {database_name}")
 
     conn.close()
@@ -42,7 +42,7 @@ def create_database(database_name: str, params: dict):
     with conn.cursor() as cur:
         cur.execute("""
             CREATE TABLE employers (
-                employer_id PRIMARY KEY,
+                employer_id INTEGER PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 employer_url TEXT
             )
@@ -52,11 +52,11 @@ def create_database(database_name: str, params: dict):
         cur.execute("""
             CREATE TABLE vacancies (
                 vacancy_id SERIAL PRIMARY KEY,
-                employer_id INT REFERENCES employers(employer_id),
+                employer_id INTEGER REFERENCES employers(employer_id),
                 position VARCHAR NOT NULL,
                 min_salary INTEGER,
                 max_salary INTEGER,
-                requirements TEXT
+                requirements TEXT,
                 vacancy_url TEXT
             )
         """)
@@ -70,8 +70,8 @@ def save_employers(database_name, params):
 
     api = HHApi()
 
-    for emp in employers.values():
-        inf = api.get_employer_by_name(employer_name=emp)[0]
+    for emp in employers.keys():
+        inf = api.get_employer_by_id(emp)
         with conn.cursor() as cur:
             cur.execute(
                 """
@@ -91,16 +91,17 @@ def save_vacancies(database_name, params):
     api = HHApi()
 
     for emp in employers.keys():
-        inf = api.get_vacancies_by_company(emp)[0]
-        with conn.cursor() as cur:
-            cur.execute(
-                """
-                INSERT INTO employers (employer_id, position, min_salary, max_salary, requirements, vacancy_url)
-                VALUES (%s, %s, %s, %s, %s, %s)
-                """,
-                (emp, inf.get('position'), inf.get('min_salary'), inf.get('max_salary'),
-                 inf.get('requirements'), inf.get('vacancy_url'))
-            )
+        vacancies = api.get_vacancies_by_company(emp)
+        for inf in vacancies:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO vacancies (employer_id, position, min_salary, max_salary, requirements, vacancy_url)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (emp, inf.get('position'), inf.get('min_salary'), inf.get('max_salary'),
+                     inf.get('requirements'), inf.get('vacancy_url'))
+                )
 
     conn.commit()
     conn.close()
