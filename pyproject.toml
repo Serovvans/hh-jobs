@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "hh-jobs"
+version = "0.1.0"
+description = ""
+authors = ["Serov Ivan <serovvans@yandex.ru>"]
+readme = "README.md"
+packages = [{include = "hh_jobs"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+psycopg2 = "^2.9.9"
+requests = "^2.31.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
