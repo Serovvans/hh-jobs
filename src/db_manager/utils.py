@@ -25,8 +25,13 @@ def config(filename="database.ini", section="postgresql") -> dict:
     return db
 
 
-def create_database(database_name: str, params: dict):
-    """Создание базы данных и таблиц для сохранения данных о каналах и видео."""
+def create_database(database_name: str, params: dict) -> None:
+    """
+    Создание базы данных и таблиц для сохранения данных о компаниях и вакансиях.
+    :param database_name: Имя базы данный
+    :param params: данные для подключения
+    :return: None
+    """
 
     conn = psycopg2.connect(dbname='postgres', **params)
     conn.autocommit = True
@@ -65,7 +70,13 @@ def create_database(database_name: str, params: dict):
     conn.close()
 
 
-def save_employers(database_name, params):
+def save_employers(database_name: str, params: dict) -> None:
+    """
+    Загрузка данных о компаниях из api в базу данных
+    :param database_name: имя базы
+    :param params: данные для подключения
+    :return:
+    """
     conn = psycopg2.connect(dbname=database_name, **params)
 
     api = HHApi()
@@ -85,7 +96,13 @@ def save_employers(database_name, params):
     conn.close()
 
 
-def save_vacancies(database_name, params):
+def save_vacancies(database_name: str, params: dict) -> None:
+    """
+    Загрузка данных о вакансиях из api в базу данных
+    :param database_name: имя базы
+    :param params: данные для подключения
+    :return:
+    """
     conn = psycopg2.connect(dbname=database_name, **params)
 
     api = HHApi()
